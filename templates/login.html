@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Personal Finance Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="left">
+        <h2>💼 Finance Input</h2>
+        <form method="POST">
+            <label>Age:</label>
+            <input type="number" name="age" required>
+            <label>Monthly Income:</label>
+            <input type="number" name="income" required>
+            <label>Current Expenses:</label>
+            <input type="number" name="expenses" required>
+            <label>Current Savings:</label>
+            <input type="number" name="savings" required>
+            <button type="submit">Predict</button>
+        </form>
+    </div>
+
+    <div class="right">
+        {% if data %}
+        <div class="upper">
+            <h2>💸 Predicted Next Month's Expenses</h2>
+            <p><strong>₹{{ data.prediction }}</strong></p>
+        </div>
+
+        <div class="lower">
+            <canvas id="financeChart"></canvas>
+            <script>
+                const ctx = document.getElementById("financeChart").getContext("2d");
+                const financeChart = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: ["Income", "Expenses", "Savings", "Predicted Expenses"],
+                        datasets: [{
+                            label: "₹ Amount",
+                            data: [
+                                {{ data.income }},
+                                {{ data.expenses }},
+                                {{ data.savings }},
+                                {{ data.prediction }}
+                            ],
+                            backgroundColor: [
+                                "#007bff", "#dc3545", "#28a745", "#ffc107"
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        animation: {
+                            duration: 2000,
+                            easing: "easeInOutBounce"
+                        }
+                    }
+                });
+            </script>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

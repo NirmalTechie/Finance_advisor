@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Personal Finance Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <h2>Enter Your Financial Details</h2>
+            <form method="post">
+                <input type="number" name="age" placeholder="Age" required>
+                <input type="number" name="income" placeholder="Monthly Income" required>
+                <input type="number" name="expenses" placeholder="Current Expenses" required>
+                <input type="number" name="savings" placeholder="Savings" required>
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+
+        <div class="right-panel">
+            {% if predicted_expense %}
+            <div class="result">
+                <h3>Predicted Next Month's Expenses:</h3>
+                <p class="expense">₹{{ predicted_expense }}</p>
+                <p>Category: <strong>{{ category }}</strong></p>
+            </div>
+
+            <div class="charts">
+                <div class="chart half-pie">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div class="chart line-graph">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+
+            <script>
+                const pieCtx = document.getElementById('pieChart').getContext('2d');
+                const pieChart = new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Income', 'Expenses', 'Savings'],
+                        datasets: [{
+                            data: [{{ income }}, {{ expenses }}, {{ savings }}],
+                backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+                    borderWidth: 1
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                        rotation: -90,
+                            circumference: 180,
+                                plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+                const lineCtx = document.getElementById('lineChart').getContext('2d');
+                const lineChart = new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Expense Forecast (₹)',
+                            data: [
+                                {{ expenses }},
+                        {{ expenses + 200 }
+                },
+                    {{ expenses + 400 }},
+                { { predicted_expense } }
+                        ],
+                borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        tension: 0.4,
+                            fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                        animation: {
+                        duration: 1000,
+                            easing: 'easeInOutQuart'
+                    }
+                }
+            });
+            </script>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>
